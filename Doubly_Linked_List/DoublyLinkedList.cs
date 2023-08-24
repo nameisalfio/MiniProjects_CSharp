@@ -1,4 +1,5 @@
 using System;
+using Test.cs;
 
 namespace DoublyLinkedList
 {
@@ -8,10 +9,14 @@ namespace DoublyLinkedList
         public Node<T> Next { get; set; }
         public Node<T> Prev { get; set; }
 
-        public Node(T key)
+        public Node()
+        {
+            Next = Prev = null;
+        }
+
+        public Node(T key) : this()
         {
             Key = key;
-            Next = Prev = null;
         }
 
         public void Print()
@@ -25,83 +30,98 @@ namespace DoublyLinkedList
         private Node<T> Head { get; set; }
         private Node<T> Tail { get; set; }
 
-        public bool IsEmpty()
-        {
-            return Head == null && Tail == null;
-        }
+        public bool IsEmpty => Head == null && Tail == null;
 
         public void InsertHead(T key)
         {
-            Node<T> ToInsert = new Node<T>(key);
-            if (IsEmpty())
+            var newNode = new Node<T>(key);
+            if (IsEmpty)
             {
-                Head = Tail = ToInsert;
-                return;
+                Head = Tail = newNode;
             }
-
-            ToInsert.Next = Head;
-            Head.Prev = ToInsert;
-            Head = ToInsert;
+            else
+            {
+                newNode.Next = Head;
+                Head.Prev = newNode;
+                Head = newNode;
+            }
         }
 
         public void InsertTail(T key)
         {
-            Node<T> ToInsert = new Node<T>(key);
-            if (IsEmpty())
+            var newNode = new Node<T>(key);
+            if (IsEmpty)
             {
-                InsertHead(key);
-                return;
+                Head = Tail = newNode;
             }
-
-            ToInsert.Prev = Tail;
-            Tail.Next = ToInsert;
-            Tail = ToInsert;
+            else
+            {
+                newNode.Prev = Tail;
+                Tail.Next = newNode;
+                Tail = newNode;
+            }
         }
 
         public void RemoveHead()
         {
-            if (IsEmpty())
+            if (IsEmpty)
             {
                 Console.WriteLine("Empty list");
                 return;
             }
 
             Head = Head.Next;
-            Head.Prev = null;
+            if (Head != null)
+            {
+                Head.Prev = null;
+            }
+            else
+            {
+                Tail = null;
+            }
         }
 
         public void RemoveTail()
         {
-            if (IsEmpty())
+            if (IsEmpty)
             {
                 RemoveHead();
                 return;
             }
 
             Tail = Tail.Prev;
-            Tail.Next = null;
+            if (Tail != null)
+            {
+                Tail.Next = null;
+            }
+            else
+            {
+                Head = null;
+            }
         }
 
-        public bool Search(T key, ref T value)
+        public bool Search(T key, out T value)
         {
-            if (IsEmpty())
+            value = default(T);
+            if (IsEmpty)
             {
                 Console.WriteLine("Empty list");
                 return false;
             }
 
-            Node<T> Current = Head;
-            while (Current != null && !Current.Key.Equals(key))
-                Current = Current.Next;
+            Node<T> current = Head;
+            while (current != null && !current.Key.Equals(key))
+            {
+                current = current.Next;
+            }
 
-
-            if (Current == null)
+            if (current == null)
             {
                 Console.WriteLine($"Key {key} not found");
                 return false;
             }
 
-            value = Current.Key;
+            value = current.Key;
             return true;
         }
 
@@ -117,36 +137,12 @@ namespace DoublyLinkedList
             Console.WriteLine("NIL");
         }
     }
+
     class Program
     {
         static void Main(string[] args)
         {
-            DLList<int> list = new DLList<int>();
-
-            list.InsertHead(3);
-            list.InsertHead(2);
-            list.InsertHead(1);
-            list.InsertHead(0);
-
-            list.InsertTail(4);
-            list.InsertTail(5);
-            list.InsertTail(6);
-
-            list.Print();
-
-            Console.WriteLine("\n--> RemoveHead: ");
-            list.RemoveHead();
-            list.Print();
-
-            Console.WriteLine("\n--> RemoveTail: ");
-            list.RemoveTail();
-            list.Print();
-
-            Console.WriteLine("\n--> Search 5: ");
-            int value = 0;
-            if (list.Search(5, ref value))
-                Console.WriteLine($"Value: {value}");
-
+            
         }
     }
 }
