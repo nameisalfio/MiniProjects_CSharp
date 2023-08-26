@@ -29,18 +29,14 @@ namespace Test_DLList
             Console.WriteLine();
         }
 
-        // Aggiungi altri metodi di test per le altre operazioni della lista
     }
 
     class Program
     {
         static void Main(string[] args)
         {
-            // Esegui i test delle operazioni sulla lista
             ListOperationsTests.TestInsertHead();
             ListOperationsTests.TestInsertTail();
-
-            // Esegui altri test qui
         }
     }
 }
