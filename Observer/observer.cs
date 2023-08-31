@@ -35,7 +35,7 @@ namespace Observer
 
         public void Update(Product product)
         {
-            Console.WriteLine($"Customer {Name} received notification: {product.Name} is now available in the store.");
+            Console.WriteLine($"{Name} received notification: {product.Name} is now available in the store. ");
         }
     }
 
@@ -87,6 +87,7 @@ namespace Observer
         public void AddProduct(Product product)
         {
             products.Add(product, product.Name);
+            Notify(product.Name);
         }
     }
 
@@ -95,16 +96,12 @@ namespace Observer
         static void Main(string[] args)
         {
             Store store = new Store();
-            store.AddProduct(new Product("iPhone", 10.99));
-            store.AddProduct(new Product("Mac-Book", 20.99));
 
-            Customer bob = new Customer("Bob");
-            Customer alice = new Customer("Alice");
+            store.Attach(new Customer("Bob"));
+            store.Attach(new Customer("Alice"));
 
-            store.Attach(bob);
-            store.Attach(alice);
-
-            store.Notify("iPhone");
+            store.AddProduct(new Product("iPhone", 1200.98));
+            store.AddProduct(new Product("Mac-Book", 1730.20));
         }
     }
 }
