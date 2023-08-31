@@ -112,13 +112,26 @@ namespace Factory_Metod
         static void Main(string[] args)
         {
             IVehicleFactory factory = new RoadFactory();
-
             IVehicle vehicle = factory.CreateVehicle();
 
             vehicle.Deliver("Augusta city");
             vehicle.Drive();
             Console.WriteLine($"Info -> {vehicle.GetInfo()}");
-            Console.WriteLine(vehicle.CalculateDeliveryTime(5000)); // non è possibile invocare metodi della sottoclasse di IVehicle 
+
+            if (vehicle is RoadVehicle roadVehicle)
+                Console.WriteLine(roadVehicle.CalculateDeliveryTime(8000));
+
+            Console.WriteLine();
+
+            factory = new SeaFactory();
+            vehicle = factory.CreateVehicle();
+            
+            vehicle.Deliver("Catania city");
+            vehicle.Drive();
+            Console.WriteLine($"Info -> {vehicle.GetInfo()}");
+
+            if (vehicle is SeaVehicle seaVehicle)
+                Console.WriteLine(seaVehicle.CalculateOptimalRoute("Augusta", "Catania"));
         }
     }
 }
