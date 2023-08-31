@@ -13,48 +13,61 @@ namespace Factory_Metod
     abstract class Vehicle : IVehicle
     {
         protected string model;
-        protected uint horsepower;
 
-        public Vehicle(string _model, uint _horsepower)
+        protected string typeLogistic;
+
+        public Vehicle(string _model, string _typeLogistic)
         {
             model = _model;
-            horsepower = _horsepower;
+            typeLogistic = _typeLogistic;
         }
 
-        public string GetInfo()
+        public void Drive()
         {
-            return $"{model}, {horsepower}HP";
+            Console.WriteLine($"Driving the {model} on the {typeLogistic}");
         }
+
+        public void Deliver(string destination)
+        {
+            Console.WriteLine($"Delivering the {model} to {destination}");
+        }
+
+        public abstract string GetInfo();
     }
 
     // Concrete products
-    class Car : Vehicle
+    class RoadVehicle : Vehicle
     {
-        public Car(string _model, uint _horsepower) : base(_model, _horsepower) { }
+        private uint averageSpeed;
 
-        public void Drive()
+        public RoadVehicle(string _model, uint _averageSpeed) : base(_model, "road")
         {
-            Console.WriteLine($"Driving the Car {model}");
+            averageSpeed = _averageSpeed;
         }
 
-        public void Deliver(string destination)
+        public override string GetInfo() => $"Road Vehicle: {model}, Average Speed: {averageSpeed} km/h";
+
+        public string CalculateDeliveryTime(uint distanceInKilometers)
         {
-            Console.WriteLine($"Delivering the Car {model} to {destination}");
+            double time = (double)distanceInKilometers / averageSpeed;
+            return $"Estimated delivery time for {distanceInKilometers} km: {time} hours";
         }
     }
 
-    class Motorcycle : Vehicle
+    class SeaVehicle : Vehicle
     {
-        public Motorcycle(string _model, uint _horsepower) : base(_model, _horsepower) { }
+        private uint cargoCapacity;
 
-        public void Drive()
+        public SeaVehicle(string _model, uint _cargoCapacity) : base(_model, "sea")
         {
-            Console.WriteLine($"Driving the Motorcycle {model}");
+            cargoCapacity = _cargoCapacity;
         }
 
-        public void Deliver(string destination)
+        public override string GetInfo() => $"Sea Vehicle: {model}, Cargo Capacity: {cargoCapacity} tons";
+
+        public string CalculateOptimalRoute(string start, string end)
         {
-            Console.WriteLine($"Delivering the Motorcycle {model} to {destination}");
+            return $"Optimal route from {start} to {end}: Route details...";
         }
     }
 
@@ -62,22 +75,34 @@ namespace Factory_Metod
     interface IVehicleFactory
     {
         IVehicle CreateVehicle();
+
+        IVehicle CreateSpecialVehicle();
     }
 
-    // Concrete creators
-    class CarFactory : IVehicleFactory
+    // Concrete creators 
+    class RoadFactory : IVehicleFactory
     {
         public IVehicle CreateVehicle()
         {
-            return new Car("Sedan", 200);
+            return new RoadVehicle("Truck", 60);
+        }
+
+        public IVehicle CreateSpecialVehicle()
+        {
+            return new RoadVehicle("Sports car", 150);
         }
     }
 
-    class MotorcycleFactory : IVehicleFactory
+    class SeaFactory : IVehicleFactory
     {
         public IVehicle CreateVehicle()
         {
-            return new Motorcycle("Harley-Davidson Cruiser", 100);
+            return new SeaVehicle("Ship", 5000);
+        }
+
+        public IVehicle CreateSpecialVehicle()
+        {
+            return new SeaVehicle("Yatch", 1800);
         }
     }
 
@@ -86,21 +111,14 @@ namespace Factory_Metod
     {
         static void Main(string[] args)
         {
-            IVehicleFactory carFactory = new CarFactory();
-            IVehicle car = carFactory.CreateVehicle();
+            IVehicleFactory factory = new RoadFactory();
 
-            IVehicleFactory motorcycleFactory = new MotorcycleFactory();
-            IVehicle motorcycle = motorcycleFactory.CreateVehicle();
+            IVehicle vehicle = factory.CreateVehicle();
 
-            Console.WriteLine("Car:");
-            Console.WriteLine(car.GetInfo());
-            car.Drive();
-            car.Deliver("Customer A");
-
-            Console.WriteLine("\nMotorcycle:");
-            Console.WriteLine(motorcycle.GetInfo());
-            motorcycle.Drive();
-            motorcycle.Deliver("Customer B");
+            vehicle.Deliver("Augusta city");
+            vehicle.Drive();
+            Console.WriteLine($"Info -> {vehicle.GetInfo()}");
+            Console.WriteLine(vehicle.CalculateDeliveryTime(5000)); // non è possibile invocare metodi della sottoclasse di IVehicle 
         }
     }
 }
