@@ -1,38 +1,17 @@
 using System;
-using System.Collections.Generic; // Aggiunto il using directive per System.Collections.Generic
+using System.Collections.Generic;
 using System.Linq;
-
-/*
-    Model:
-
-    - Rappresenta i dati dell'applicazione e la logica di business.
-    - Gestisce l'accesso, la modifica e la manipolazione dei dati.
-    - Notifica le modifiche ai dati agli altri componenti.
-
-
-    View:
-
-    - Si occupa della presentazione dei dati al cliente o all'utente.
-    - Riceve input dall'utente e lo trasmette al controller per l'elaborazione.
-    - Aggiorna l'interfaccia utente in base alle modifiche apportate al model.
-
-
-    Controller:
-
-    - Riceve gli input dall'utente tramite la vista.
-    - Elabora le richieste dell'utente, interagendo con il modello se necessario.
-    - Aggiorna la vista in base alle modifiche apportate al model.
-*/
 
 namespace ModelViewController
 {
     public class TaskModel
     {
-        public TaskModel(string _TaskName, bool _IsCompleted = false) 
+        public TaskModel(string taskName, bool isCompleted = false)
         {
-            TaskName = _TaskName;
-            IsCompleted = _IsCompleted;
+            TaskName = taskName;
+            IsCompleted = isCompleted;
         }
+
         public string TaskName { get; set; }
         public bool IsCompleted { get; set; }
 
@@ -41,12 +20,12 @@ namespace ModelViewController
 
     public class TaskView
     {
-        public void DisplayTasks(List<TaskModel> tasks)
+        public void DisplayTasks(IEnumerable<TaskModel> tasks)
         {
             Console.WriteLine("Task List:");
             foreach (var task in tasks)
                 Console.WriteLine(task.GetInfo());
-            Console.WriteLine("");
+            Console.WriteLine();
         }
 
         public string GetUserInput()
@@ -58,8 +37,8 @@ namespace ModelViewController
 
     public class TaskController
     {
-        private List<TaskModel> tasks = new List<TaskModel>();
-        private TaskView view = new TaskView();
+        private readonly List<TaskModel> tasks = new List<TaskModel>();
+        private readonly TaskView view = new TaskView();
 
         public void AddTask(string taskName)
         {
@@ -73,20 +52,50 @@ namespace ModelViewController
                 task.IsCompleted = true;
         }
 
+        private void DisplayOptions()
+        {
+            Console.WriteLine("Options:");
+            Console.WriteLine("1. Add Task");
+            Console.WriteLine("2. Mark Task as Completed");
+            Console.WriteLine("3. Sort by Completed");
+            Console.WriteLine("4. Sort by Not Completed");
+            Console.WriteLine("5. Exit");
+        }
+
         public void Run()
         {
-            while(true)
+            while (true)
             {
                 view.DisplayTasks(tasks);
-                var taskName = view.GetUserInput();
+                DisplayOptions();
 
-                if(string.IsNullOrWhiteSpace(taskName))
-                    break;
+                Console.Write("\nEnter an option: ");
+                var choice = Console.ReadLine();
 
-                if(tasks.Any(t => t.TaskName == taskName))
-                    MarkTaskAsCompleted(taskName);
-                else
-                    AddTask(taskName);
+                switch (choice)
+                {
+                    case "1":
+                        var taskName = view.GetUserInput();
+                        AddTask(taskName);
+                        break;
+                    case "2":
+                        taskName = view.GetUserInput();
+                        MarkTaskAsCompleted(taskName);
+                        break;
+                    case "3":
+                        tasks.Sort((a, b) => b.IsCompleted.CompareTo(a.IsCompleted));
+                        break;
+                    case "4":
+                        tasks.Sort((a, b) => a.IsCompleted.CompareTo(b.IsCompleted));
+                        break;
+                    case "5":
+                        Console.WriteLine("Exiting...");
+                        return;
+                    default:
+                        Console.WriteLine("Invalid choice.");
+                        break;
+                }
+                Console.WriteLine();
             }
         }
     }
